@@ -55,7 +55,7 @@ def main():
             entry.load()().execute(sys.argv[2:])
         except ModuleNotFoundError:
             raise ValueError(
-                "Plugin with entry point {entry.name} could not be loaded.")
+                f"Plugin with entry point {entry.name} could not be loaded.")
 
     # Print help message if the entry point could not be found.
     else:
@@ -63,7 +63,15 @@ def main():
         for name, entry in entry_points.items():
             try:
                 entry = entry.load()
-                description_list.append(f"{name}\n    {entry().description}")
+                entry_instance = entry()
+                description = entry_instance.description
+                version = getattr(entry_instance, "version", None)
+                if version is not None:
+                    display_name = f"{name} [{version}]"
+                else:
+                    display_name = f"{name}"
+                description_list.append(f"{display_name}\n"
+                                        f"    {description}")
             except ModuleNotFoundError:
                 logging.warning(
                     f"Plugin with entry point {name} could not be loaded.")
