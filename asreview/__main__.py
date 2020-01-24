@@ -62,16 +62,7 @@ def main():
         description_list = []
         for name, entry in entry_points.items():
             try:
-                entry = entry.load()
-                entry_instance = entry()
-                description = entry_instance.description
-                version = getattr(entry_instance, "version", None)
-                if version is not None:
-                    display_name = f"{name} [{version}]"
-                else:
-                    display_name = f"{name}"
-                description_list.append(f"{display_name}\n"
-                                        f"    {description}")
+                description_list.append(entry.load()().format(name))
             except ModuleNotFoundError:
                 logging.warning(
                     f"Plugin with entry point {name} could not be loaded.")
